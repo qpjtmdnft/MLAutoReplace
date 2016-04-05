@@ -405,14 +405,22 @@ static MLAutoReplace *sharedPlugin;
             continue;
         }
         
-        //检测是否匹配
-        if(![currentLine vv_matchesPatternRegexPattern:regex]){
+        if (![currentLine vv_matchesPatternRegexPattern:regex]) {
             continue;
         }
         
-        //时间标签会替换成当前时间
-        if ([replaceContent rangeOfString:@"<datetime>"].location!=NSNotFound) {
-            replaceContent = [replaceContent stringByReplacingOccurrencesOfString:@"<datetime>" withString:[NSDate nowString]];
+        //检测是否匹配
+        NSArray *results = [currentLine vv_stringsByExtractingGroupsUsingRegexPattern:regex];
+        
+//        //时间标签会替换成当前时间
+//        if ([replaceContent rangeOfString:@"<datetime>"].location!=NSNotFound) {
+//            replaceContent = [replaceContent stringByReplacingOccurrencesOfString:@"<datetime>" withString:[NSDate nowString]];
+//        }
+        if (results.count > 0) {
+            replaceContent = [replaceContent stringByReplacingOccurrencesOfString:@"$1" withString:results[0]];
+        }
+        if (results.count > 1) {
+            replaceContent = [replaceContent stringByReplacingOccurrencesOfString:@"$2" withString:results[1]];
         }
         
         //按键以完成替换
@@ -420,7 +428,7 @@ static MLAutoReplace *sharedPlugin;
         return YES;
         
     }
-    
+
     return NO;
     
 }
